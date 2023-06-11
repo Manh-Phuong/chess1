@@ -3,14 +3,14 @@ import os
 import pygame
 import chess
 from Interface.button import Button
-from ChessHelpers import ChessEngineHelper
+from ChessHelpers import AlphaBetaMove
 
 TILE_SIZE = 64
 BORDER = 10
 INFO_HEIGHT = 100
 BOARD_POS = (BORDER, BORDER)
-COLOR_DARK = (181, 136, 99)
-COLOR_LIGHT = (240, 217, 181)
+COLOR_DARK = "#6fa3d5"
+COLOR_LIGHT = "#edf2fa"
 COLOR_BG = (22, 21, 18)
 COLOR_DRAW_LINE = (22, 21, 18)
 COLOR_DRAW_SELECT = (220, 10, 0, 50)
@@ -20,7 +20,7 @@ IMAGE_PATH = "chess-main/Assets/images/"
 
 BG = pygame.image.load("chess-main/Assets/Background.png")
 def get_font(size):
-    return pygame.font.Font("chess-main/Assets/font.ttf", size)     
+     pygame.font.Font("chess-main/Assets/font.ttf", size)     
 
 
 def create_board_surface():
@@ -32,7 +32,7 @@ def create_board_surface():
             pygame.draw.rect(board_surface, pygame.Color(COLOR_DARK if dark else COLOR_LIGHT), rect)
             dark = not dark
         dark = not dark
-    return board_surface
+     board_surface
 
 
 def get_square_under_mouse(board):
@@ -40,10 +40,10 @@ def get_square_under_mouse(board):
     x, y = [int(v // TILE_SIZE) for v in mouse_pos]
     try:
         if x >= 0 and y >= 0:
-            return board[y][x], x, y
+             board[y][x], x, y
     except IndexError:
         pass
-    return None, None, None
+     None, None, None
 
 
 def create_board_from_fen(fen):
@@ -63,34 +63,34 @@ def create_board_from_fen(fen):
         elif f in ('K', 'k', 'Q', 'q', 'R', 'r', 'N', 'n', 'B', 'b', 'P', 'p'):
             board[int(col)][row] = get_piece(f)  
             row = row + 1
-    return board
+     board
 
 
 def get_piece(f):
     if f == 'K':
-        return 'white', 'king'
+         'white', 'king'
     elif f == 'k':
-        return 'black', 'king'
+         'black', 'king'
     elif f == 'Q':
-        return 'white', 'queen'
+         'white', 'queen'
     elif f == 'q':
-        return 'black', 'queen'
+         'black', 'queen'
     elif f == 'R':
-        return 'white', 'rook'
+         'white', 'rook'
     elif f == 'r':
-        return 'black', 'rook'
+         'black', 'rook'
     elif f == 'N':
-        return 'white', 'knight'
+         'white', 'knight'
     elif f == 'n':
-        return 'black', 'knight'
+         'black', 'knight'
     elif f == 'B':
-        return 'white', 'bishop'
+         'white', 'bishop'
     elif f == 'b':
-        return 'black', 'bishop'
+         'black', 'bishop'
     elif f == 'P':
-        return 'white', 'pawn'
+         'white', 'pawn'
     elif f == 'p':
-        return 'black', 'pawn'
+         'black', 'pawn'
 
 
 def draw_pieces(screen, board, font, selected_piece):
@@ -121,7 +121,7 @@ def resource_path(relative_path):
     except Exception:
         base_path = os.path.abspath(".")
 
-    return os.path.join(base_path, relative_path)
+     os.path.join(base_path, relative_path)
 
 
 def draw_selector(screen, piece, x, y):
@@ -141,7 +141,7 @@ def draw_drag(screen, board, selected_piece, font):
         s1 = pygame.image.load(resource_path(IMAGE_PATH + color + "/" + piece_type + ".png")).convert_alpha()
         s2 = pygame.image.load(resource_path(IMAGE_PATH + color + "/" + piece_type + ".png")).convert_alpha()
 
-        return x, y
+         x, y
 
 
 pygame.init()
@@ -244,15 +244,15 @@ def options():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if LEVEL1_BUTTON.checkForInput(OPTIONS_MOUSE_POS):       
-                    play_chess(board, black=ChessEngineHelper.MoveGenerator().mini_max_move_1)
+                    play_chess(board, black=AlphaBetaMove.BestMove().alpha_beta_move_1)
                     pygame.quit()
                     sys.exit()
                 if LEVEL2_BUTTON.checkForInput(OPTIONS_MOUSE_POS):
-                    play_chess(board, black=ChessEngineHelper.MoveGenerator().mini_max_move_2)
+                    play_chess(board, black=AlphaBetaMove.BestMove().alpha_beta_move_2)
                     pygame.quit()
                     sys.exit()
                 if LEVEL3_BUTTON.checkForInput(OPTIONS_MOUSE_POS):
-                    play_chess(board, black=ChessEngineHelper.MoveGenerator().mini_max_move_3)
+                    play_chess(board, black=AlphaBetaMove.BestMove().alpha_beta_move_3)
                     pygame.quit()
                     sys.exit()
 
@@ -319,7 +319,7 @@ def play_chess(chess_board, white="player", black="player"):
         events = pygame.event.get()
         for e in events:
             if e.type == pygame.QUIT:
-                return chess_board.outcome()
+                 chess_board.outcome()
         
         # don't try to play if the game is over
         outcome = chess_board.outcome()
@@ -332,12 +332,12 @@ def play_chess(chess_board, white="player", black="player"):
                 # events = pygame.event.get()
                 for e in events:
                     if e.type == pygame.QUIT:
-                        return outcome
+                         outcome
                     if e.type == pygame.MOUSEBUTTONDOWN:
                         if piece is not None:
                             selected_piece = piece, x, y
                         if BACK_BUTTON.checkForInput(BACK_MOUSE_POS):
-                            play_chess(chess.Board(), black=ChessEngineHelper.MoveGenerator().mini_max_move)
+                            play_chess(chess.Board(), black=AlphaBetaMove.BestMove().alpha_beta_move)
                             pygame.quit()
                             sys.exit()
                     if e.type == pygame.MOUSEBUTTONUP:
@@ -368,27 +368,24 @@ def play_chess(chess_board, white="player", black="player"):
                         drop_pos = None
                     
             else:
-                # generate and push a move to the real chess board
                 if chess_board.turn == chess.WHITE:
                     move = white(chess_board)
                     if move is False:
-                        return
+                        
                     chess_board.push(move)
                 else:
                     move = black(chess_board)
                     if move is False:
-                        return
+                        
                     chess_board.push(move)
-                # update our array representation for the UI
                 board = create_board_from_fen(chess_board.board_fen())
-                # end of move generation
         else:
             for e in events:
                 if e.type == pygame.QUIT:
-                    return outcome
+                     outcome
                 if e.type == pygame.MOUSEBUTTONDOWN:
                     if REPLAY_BUTTON.checkForInput(REPLAY_MOUSE_POS):
-                        play_chess(chess.Board(), black=ChessEngineHelper.MoveGenerator().mini_max_move)
+                        play_chess(chess.Board(), black=AlphaBetaMove.BestMove().alpha_beta_move)
                         pygame.quit()
                         sys.exit()
             
